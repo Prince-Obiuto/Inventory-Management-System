@@ -1,5 +1,17 @@
 package com.senolight.InventoryManagementSystem.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.senolight.InventoryManagementSystem.model.Product;
+import com.senolight.InventoryManagementSystem.model.Sales;
+import com.senolight.InventoryManagementSystem.repository.ProductRepository;
+import com.senolight.InventoryManagementSystem.repository.SalesRepository;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class SalesService {
@@ -36,7 +48,7 @@ public class SalesService {
         return salesRepository.findByTimeOfSaleBetween(start, end);
     }
 
-    public Sale getSaleById(Long id) {
+    public Sales getSaleById(Long id) {
         return salesRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found"));
     }
 }

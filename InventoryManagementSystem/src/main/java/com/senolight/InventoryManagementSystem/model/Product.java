@@ -2,7 +2,7 @@ package com.senolight.InventoryManagementSystem.model;
 
 import java.time.LocalDateTime;
 
-import javax.annotation.processing.Generated;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "products")

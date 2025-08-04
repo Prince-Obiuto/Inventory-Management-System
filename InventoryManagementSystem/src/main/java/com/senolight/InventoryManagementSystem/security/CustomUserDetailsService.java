@@ -1,9 +1,24 @@
 package com.senolight.InventoryManagementSystem.security;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.senolight.InventoryManagementSystem.model.User;
+import com.senolight.InventoryManagementSystem.repository.UserRepository;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
+
+    // Constructor injection for UserRepository
+    // Will still check this later to be sure we need it
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

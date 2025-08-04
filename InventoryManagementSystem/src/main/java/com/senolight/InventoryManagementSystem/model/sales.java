@@ -1,9 +1,15 @@
 package com.senolight.InventoryManagementSystem.model;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 @Entity
 // Getters and Setters using Lombok
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Sales {
@@ -30,5 +36,9 @@ public class Sales {
         this.quantitySold = quantitySold;
         this.totalAmount = totalAmount;
         this.timeOfSale = timeOfSale;
+    }
+
+    public Sales getSaleById(Long id) {
+        return salesRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found"));
     }
 }

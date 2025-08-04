@@ -1,4 +1,25 @@
-package.com.senolight.InventoryManagementSystem.controller;
+package com.senolight.InventoryManagementSystem.controller;
+
+import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.senolight.InventoryManagementSystem.model.Sales;
+import com.senolight.InventoryManagementSystem.service.InvoiceService;
+import com.senolight.InventoryManagementSystem.service.SalesService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/sales")
@@ -23,8 +44,8 @@ public class SalesController {
 
     @GetMapping("/invoice/{saleId}")
     public ResponseEntity<byte[]> generateInvoice(@PathVariable Long saleId) throws Exception {
-        Sale sale = salesService.getSaleById(saleId);
-        ByteArrayInputStream invoiceStream = InvoiceService.generateInvoice(sale);
+        Sales sales = salesService.getSaleById(saleId);
+        ByteArrayInputStream invoiceStream = InvoiceService.generateInvoice(sales);
 
         byte[] pdfBytes = invoiceStream.readAllBytes();
 
