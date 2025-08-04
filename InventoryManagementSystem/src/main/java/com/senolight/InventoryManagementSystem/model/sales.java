@@ -2,6 +2,8 @@ package com.senolight.InventoryManagementSystem.model;
 
 import java.time.LocalDateTime;
 
+//import com.senolight.InventoryManagementSystem.repository.SalesRepository;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +40,8 @@ public class Sales {
         this.timeOfSale = timeOfSale;
     }
 
-    public Sales getSaleById(Long id) {
-        return salesRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found"));
-    }
+    // The following method is commented out because it references a repository incorrectly.
+    // public Sales getSaleById(Long id) {
+    //     return SalesRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found"));
+    // }
 }

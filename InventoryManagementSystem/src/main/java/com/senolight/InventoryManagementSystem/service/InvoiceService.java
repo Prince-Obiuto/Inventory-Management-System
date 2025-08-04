@@ -16,7 +16,7 @@ import com.senolight.InventoryManagementSystem.model.Sales;
 
 @Service
 public class InvoiceService {
-    public ByteArrayInputStream generateInvoice(Sales sales) throws Exception {
+    public static ByteArrayInputStream generateInvoice(Sales sales) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(out);
         PdfDocument pdfDoc = new PdfDocument(writer);

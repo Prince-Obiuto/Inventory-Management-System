@@ -1,9 +1,11 @@
 package com.senolight.InventoryManagementSystem.service;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.senolight.InventoryManagementSystem.model.Product;
 import com.senolight.InventoryManagementSystem.repository.ProductRepository;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
@@ -15,7 +17,9 @@ public class ProductService {
     }
 
     public Product addProduct(Product product) {
-        //TODO: Check if SKU exists before adding
+        if (productRepository.findBySku(product.getSku()) != null) {
+            throw new RuntimeException("Product with SKU already exists");
+        }
         return productRepository.save(product);
     }
 
@@ -38,6 +42,6 @@ public class ProductService {
     }
 
     public Product getProductBySku(String sku) {
-        return productRepository.findBySku(sku).orElseThrow(() -> new RuntimeException("Product not found with SKU: " + sku));
+        return productRepository.findBySku(sku);//.orElseThrow(() -> new RuntimeException("Product not found with SKU: " + sku));
     }
 }
