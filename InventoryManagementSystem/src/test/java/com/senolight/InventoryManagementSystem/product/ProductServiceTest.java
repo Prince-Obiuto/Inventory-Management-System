@@ -7,7 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +30,7 @@ public class ProductServiceTest {
 
     @Test
     void testGetAllProducts() {
-        List<Product> mockProducts = Arrays.asList(new Product(1L, "Test Product", 20, 200.0));
+        List<Product> mockProducts = List.of(new Product(1L, "Test Product", 20, 200.0));
         when(productRepository.findAll()).thenReturn(mockProducts);
 
         List<Product> result = productService.getAllProducts();
@@ -54,7 +53,7 @@ public class ProductServiceTest {
         Product product = new Product(null, "New Product", 5, 50.0);
         when(productRepository.save(product)).thenReturn(product);
 
-        Product saved = productService.saveProduct(product);
+        Product saved = productService.addProduct(product);
         assertEquals("New Product", saved.getName());
     }
 }
