@@ -22,6 +22,6 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
     @Query("SELECT COALESCE(SUM(s.totalAmount), 0) FROM Sales s WHERE s.timeOfSale BETWEEN :start AND :end")
     BigDecimal calculateTotalAmountBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("SELECT COALESCE(s.quantitySold, 0) FROM Sales s WHERE s.timeOfSale BETWEEN :start AND :end")
+    @Query("SELECT COALESCE(SUM(s.quantitySold, 0) FROM Sales s WHERE s.timeOfSale BETWEEN :start AND :end")
     Long sumQuantitySoldBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
