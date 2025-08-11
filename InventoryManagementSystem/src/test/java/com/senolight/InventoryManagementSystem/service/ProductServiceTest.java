@@ -1,15 +1,24 @@
 package com.senolight.InventoryManagementSystem.service;
 
-import com.senolight.InventoryManagementSystem.model.Product;
-import com.senolight.InventoryManagementSystem.repository.ProductRepository;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
+import com.senolight.InventoryManagementSystem.model.Product;
+import com.senolight.InventoryManagementSystem.repository.ProductRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
@@ -36,7 +45,7 @@ public class ProductServiceTest {
     void testAddProduct_Success() {
         // Given
         when(productRepository.findBySku("TEST-001")).thenReturn(null);
-        when(productRepository.save(testProduct).thenReturn(testProduct);
+        when(productRepository.save(testProduct)).thenReturn(testProduct);
 
         // When
         Product savedProduct = productService.addProduct(testProduct);
@@ -55,7 +64,7 @@ public class ProductServiceTest {
 
         // When & Then
         RuntimeException e = assertThrows(RuntimeException.class, () ->
-            productService.addProduct(testProduct);
+            productService.addProduct(testProduct));
         assertEquals("Product With SKU already exits", e.getMessage());
         verify(productRepository, never()).save(any());
     }
@@ -70,7 +79,7 @@ public class ProductServiceTest {
         List<Product> products = productService.getAllProducts();
 
         // Then
-        assertNotNull(1, products.size());
+        assertEquals(1, products.size());
         assertEquals(testProduct, products.get(0));
         verify(productRepository).findAll();
     }
@@ -96,7 +105,7 @@ public class ProductServiceTest {
 
         // When & Then
         RuntimeException e = assertThrows(RuntimeException.class, () ->
-            productService.getProductById(1L);
+            productService.getProductById(1L));
         assertEquals("Product not found", e.getMessage());
     }
 
@@ -107,7 +116,7 @@ public class ProductServiceTest {
         when(productRepository.save(testProduct)).thenReturn(testProduct);
 
         // When
-        Product updatedProduct = productService.updateProduct(1L, 10);
+        Product updatedProduct = productService.updateQuantity(1L, 10);
 
         // Then
         assertEquals(90, updatedProduct.getQuantity());
