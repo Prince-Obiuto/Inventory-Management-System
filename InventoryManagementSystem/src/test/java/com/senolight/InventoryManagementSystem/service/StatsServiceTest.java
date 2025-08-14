@@ -18,7 +18,7 @@ import com.senolight.InventoryManagementSystem.repository.SalesRepository;
 
 
 @ExtendWith(MockitoExtension.class)
-public class StatsServiceTest {
+class StatsServiceTest {
     @Mock
     private SalesRepository salesRepository;
 

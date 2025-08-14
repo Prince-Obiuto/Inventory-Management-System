@@ -5,7 +5,6 @@ import com.senolight.InventoryManagementSystem.model.Sales;
 import com.senolight.InventoryManagementSystem.service.ProductService;
 import com.senolight.InventoryManagementSystem.service.SalesService;
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.properties")

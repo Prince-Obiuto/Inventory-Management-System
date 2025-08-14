@@ -21,7 +21,7 @@ import com.senolight.InventoryManagementSystem.model.Product;
 import com.senolight.InventoryManagementSystem.repository.ProductRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class ProductServiceTest {
+class ProductServiceTest {
 
     @Mock
     private ProductRepository productRepository;
@@ -48,24 +48,24 @@ public class ProductServiceTest {
         when(productRepository.save(testProduct)).thenReturn(testProduct);
 
         // When
-        Product savedProduct = productService.addProduct(testProduct);
+        Product result = productService.addProduct(testProduct);
 
         // Then
-        assertNotNull(savedProduct);
-        assertEquals("Test Product", savedProduct.getName());
+        assertNotNull(result);
+        assertEquals("Test Product", result.getName());
         verify(productRepository).findBySku("TEST-001");
         verify(productRepository).save(testProduct);
     }
 
     @Test
-    void testAddProduct_DUplicateSku_ThrowsExcpetion() {
+    void testAddProduct_DuplicateSku_ThrowsExcpetion() {
         // Given
         when(productRepository.findBySku("TEST-001")).thenReturn(testProduct);
 
         // When & Then
         RuntimeException e = assertThrows(RuntimeException.class, () ->
             productService.addProduct(testProduct));
-        assertEquals("Product With SKU already exits", e.getMessage());
+        assertEquals("Product with SKU already exists", e.getMessage());
         verify(productRepository, never()).save(any());
     }
 
@@ -112,8 +112,12 @@ public class ProductServiceTest {
     @Test
     void testUpdateProduct_Success() {
         // Given
+        testProduct.setQuantity(100);
         when(productRepository.findById(1L)).thenReturn(Optional.of(testProduct));
-        when(productRepository.save(testProduct)).thenReturn(testProduct);
+        when(productRepository.save(any(Product.class))).thenAnswer(invocation -> {
+            Product product = invocation.getArgument(0);
+            return product;
+        });
 
         // When
         Product updatedProduct = productService.updateQuantity(1L, 10);

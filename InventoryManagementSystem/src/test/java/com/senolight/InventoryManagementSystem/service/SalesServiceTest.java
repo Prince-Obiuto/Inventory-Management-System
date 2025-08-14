@@ -24,7 +24,7 @@ import com.senolight.InventoryManagementSystem.repository.ProductRepository;
 import com.senolight.InventoryManagementSystem.repository.SalesRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class SalesServiceTest {
+class SalesServiceTest {
 
     @Mock
     private SalesRepository salesRepository;
@@ -77,9 +77,9 @@ public class SalesServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
+        RuntimeException e = assertThrows(RuntimeException.class,
                 () -> salesService.recordSales(1L, 10));
-        assertEquals("Product not found", exception.getMessage());
+        assertEquals("Product not found", e.getMessage());
     }
 
     @Test
@@ -89,9 +89,9 @@ public class SalesServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.of(testProduct));
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
+        RuntimeException e = assertThrows(RuntimeException.class,
                 () -> salesService.recordSales(1L, 10));
-        assertTrue(exception.getMessage().contains("Insufficient stock"));
+        assertTrue(e.getMessage().contains("Insufficient stock"));
     }
 
     @Test
@@ -130,8 +130,8 @@ public class SalesServiceTest {
         when(salesRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
+        RuntimeException e = assertThrows(RuntimeException.class,
                 () -> salesService.getSaleById(1L));
-        assertEquals("Sale not found", exception.getMessage());
+        assertEquals("Sale not found", e.getMessage());
     }
 }

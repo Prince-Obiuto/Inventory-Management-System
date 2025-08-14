@@ -3,6 +3,7 @@ package com.senolight.InventoryManagementSystem.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.senolight.InventoryManagementSystem.security.TestSecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,12 +18,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.context.annotation.Import;
 
 import com.senolight.InventoryManagementSystem.model.Product;
 import com.senolight.InventoryManagementSystem.model.Sales;
 import com.senolight.InventoryManagementSystem.service.SalesService;
 
 @WebMvcTest(SalesController.class)
+@Import(TestSecurityConfig.class)
 class SalesControllerTest {
 
     @Autowired
@@ -57,6 +60,7 @@ class SalesControllerTest {
 
         // When & Then
         mockMvc.perform(post("/api/sales/record")
+                        //.with(csrf())
                         .param("productId", "1")
                         .param("quantitySold", "10"))
                 .andExpect(status().isOk())

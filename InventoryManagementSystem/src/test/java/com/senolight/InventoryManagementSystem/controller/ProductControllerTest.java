@@ -2,6 +2,7 @@ package com.senolight.InventoryManagementSystem.controller;
 
 import java.util.List;
 
+import com.senolight.InventoryManagementSystem.security.TestSecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -25,6 +27,7 @@ import com.senolight.InventoryManagementSystem.model.Product;
 import com.senolight.InventoryManagementSystem.service.ProductService;
 
 @WebMvcTest(ProductController.class)
+@Import(TestSecurityConfig.class)
 class ProductControllerTest {
 
     @Autowired
@@ -56,6 +59,7 @@ class ProductControllerTest {
 
         // When & Then
         mockMvc.perform(post("/api/products/add")
+                        //.with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testProduct)))
                 .andExpect(status().isOk())
@@ -107,6 +111,7 @@ class ProductControllerTest {
 
         // When & Then
         mockMvc.perform(put("/api/products/sell/1")
+                        //.with(csrf())
                         .param("quantitySold", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.quantity").value(90));
@@ -119,6 +124,7 @@ class ProductControllerTest {
     void testDeleteProduct() throws Exception {
         // When & Then
         mockMvc.perform(delete("/api/products/1"))
+                //.with(csrf())
                 .andExpect(status().isOk());
 
         verify(productService).deleteProduct(1L);
