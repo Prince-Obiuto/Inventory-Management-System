@@ -1,12 +1,20 @@
 package com.senolight.InventoryManagementSystem.views;
 
+import com.vaadin.copilot.userinfo.UserInfo;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.sidenav.SideNav;
+import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @PageTitle("Inventory Management")
 public class MainLayout extends AppLayout {
@@ -21,17 +29,68 @@ public class MainLayout extends AppLayout {
 
     private void addHeaderContent() {
         DrawerToggle toggle = new DrawerToggle();
-        toggle.setAriaLabel("Menu Toggle");
+        toggle.setAriaLabel("Menu toggle");
 
         viewTitle = new H1();
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
 
         Button logoutButton = new Button("Logout", new Icon(VaadinIcon.SIGN_OUT));
         logoutButton.addClickListener(e -> {
-            getUI().ifPresent(ui -> ui.getPage().setLocation("logout"));
+            getUI().ifPresent(ui -> ui.getPage().setLocation("/logout"));
         });
 
         Header header = new Header(toggle, viewTitle);
-        header
+        header.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX, LumoUtility.Padding.End.MEDIUM, LumoUtility.Width.FULL);
+        header.add(logoutButton);
+
+        addToNavbar(true, header);
+    }
+
+    private void addDrawerContent() {
+        H1 appName = new H1("Seno Light Inventory Management");
+        appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication != null ? authentication.getName() : "Guest";
+        Span userInfo = new Span("Welcome, " + username);
+        userInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+
+        Header header = new Header(appName, userInfo);
+
+        Scroller scroller = new Scroller(createNavigation());
+
+        addToDrawer(header, scroller);
+    }
+
+    private SideNav createNavigation() {
+        SideNav sideNav = new SideNav();
+
+        sideNav.addItem(new SideNavItem("Dasboard", DashBoardView.class, VaadinIcon.DASHBOARD.create()));
+        sideNav.addItem(new SideNavItem("Products", ProductView.class, VaadinIcon.PACKAGE.create()));
+        sideNav.addItem(new SideNavItem("Sales", SalesView.class, VaadinIcon.CART.create()));
+        sideNav.addItem(new SideNavItem("Reports", ReportsView.class, VaadinIcon.CHART.create()));
+
+        return sideNav;
+    }
+
+    @Override
+    protected void afterNavigation() {
+        super.afterNavigation();
+        viewTitle.setText(getCurrentPageTitle());
+    }
+
+    private String getCurrentPageTitle() {
+        if (getContent() == null) {
+            return "";
+        }
+
+        if (getContent().getClass().isAnnotationPresent(PageTitle.class)) {
+            return getContent().getClass().getAnnotation(PageTitle.class).value();
+        }
+
+        if (getContent() instanceof HasDynamicTitle) {
+            return ((HasDynamicTitle) getContent()).getPageTitle();
+        }
+        return "";
     }
 }
