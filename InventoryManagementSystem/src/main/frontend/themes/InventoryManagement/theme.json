@@ -1,0 +1,11 @@
+{
+  "themeName": "inventorymanagement",
+  "themeVersion": "24.4.12",
+  "lumoImports": [
+    "typography",
+    "color",
+    "spacing",
+    "badge",
+    "utility"
+  ]
+}

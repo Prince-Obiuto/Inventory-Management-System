@@ -1,25 +1,41 @@
 package com.senolight.InventoryManagementSystem.views;
 
+import com.senolight.InventoryManagementSystem.model.Product;
 import com.senolight.InventoryManagementSystem.model.Sales;
 import com.senolight.InventoryManagementSystem.service.ProductService;
 import com.senolight.InventoryManagementSystem.service.SalesService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @PageTitle("Sales")
 @Route(value = "sales", layout = MainLayout.class)
@@ -60,7 +76,7 @@ public class SalesView extends Div {
 
         grid.addColumn(new ComponentRenderer<>(Sale -> {
             Anchor downloadLink = new Anchor();
-            downloadLink.getElement().setAttribute("dowload", true);
+            downloadLink.getElement().setAttribute("download", true);
             downloadLink.setHref("/api/sales/invoice/" + sale.getId());
 
             Button downloadButton = new Button("Download Invoice", VaadinIcon.DOWNLOAD.create());
