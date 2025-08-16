@@ -47,8 +47,8 @@ public class SecurityConfig extends VaadinWebSecurity {
                 .requestMatchers("/api/**").hasAnyRole("ADMIN", "STAFF")
             );
 
-        super.filterChain(http);
         setLoginView(http, LoginView.class);
+        super.filterChain(http);
 
         return http.build();
     }
