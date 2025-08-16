@@ -36,7 +36,7 @@ public class ProductForm extends FormLayout {
         binder.bindInstanceFields(this);
 
         quantity.setMin(0);
-        quantity.setHasControls(true);
+        quantity.setStepButtonsVisible(true);
 
         price.setMin(0.01);
         price.setStep(0.01);

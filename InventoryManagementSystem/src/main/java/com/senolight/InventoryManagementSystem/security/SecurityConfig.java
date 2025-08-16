@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @EnableWebSecurity
 @Configuration
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends VaadinWebSecurity {
 
@@ -40,25 +42,13 @@ public class SecurityConfig extends VaadinWebSecurity {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            //.csrf(csrf -> csrf.enable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/stats/**").hasRole("ADMIN")
                 .requestMatchers("/api/**").hasAnyRole("ADMIN", "STAFF")
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login") // Optional: custom login page
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                //.logoutSuccessUrl("/login?logout") // Redirect after logout
-                .permitAll()
             );
 
         super.filterChain(http);
         setLoginView(http, LoginView.class);
-
 
         return http.build();
     }

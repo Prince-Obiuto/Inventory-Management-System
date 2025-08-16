@@ -1,6 +1,5 @@
 package com.senolight.InventoryManagementSystem.views;
 
-import com.vaadin.copilot.userinfo.UserInfo;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;

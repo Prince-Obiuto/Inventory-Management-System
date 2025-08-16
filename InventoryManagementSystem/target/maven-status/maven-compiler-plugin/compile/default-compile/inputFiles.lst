@@ -1,3 +1,5 @@
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\config\DataInitializer.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\constants\Constants.java
 C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\controller\ProductController.java
 C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\controller\SalesController.java
 C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\controller\StatsController.java
@@ -13,6 +15,17 @@ C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSyste
 C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\security\CustomUserDetailsService.java
 C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\security\SecurityConfig.java
 C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\service\InvoiceService.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\service\NotificationService.java
 C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\service\ProductService.java
 C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\service\SalesService.java
 C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\service\StatsService.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\utils\ViewUtils.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\views\AccessDeniedView.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\views\DashBoardView.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\views\ErrorView.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\views\LoginView.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\views\MainLayout.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\views\ProductForm.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\views\ProductView.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\views\ReportsView.java
+C:\Users\Owner\IdeaProjects\Inventory-Management-System\InventoryManagementSystem\src\main\java\com\senolight\InventoryManagementSystem\views\SalesView.java

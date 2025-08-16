@@ -1,6 +1,7 @@
 package com.senolight.InventoryManagementSystem.views;
 
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -23,7 +24,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         setJustifyContentMode(JustifyContentMode.CENTER);
 
         login.setAction("login");
-        logiin.setForgotPasswordButtonVisible(false);
+        login.setForgotPasswordButtonVisible(false);
 
         H1 title = new H1("Seno Light");
         H2 subtitle = new H2("Inventory Management System");

@@ -71,10 +71,10 @@ public class SalesView extends Div {
         grid.addColumn(sale -> sale.getProduct().getName()).setHeader("Product").setAutoWidth(true);
         grid.addColumn(Sales::getQuantitySold).setHeader("Quantity").setAutoWidth(true);
         grid.addColumn(sale -> "₦" + String.format("%.2f", sale.getTotalAmount())).setHeader("Total Amount").setAutoWidth(true);
-        grid.addColumn(sale -> sale.getTimeOfSale().format(DateTimeFormatter.ofPattern("dd/mm/yyyy hh:mm")))
+        grid.addColumn(sale -> sale.getTimeOfSale().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
                 .setHeader("Date/Time").setAutoWidth(true);
 
-        grid.addColumn(new ComponentRenderer<>(Sale -> {
+        grid.addColumn(new ComponentRenderer<>(sale -> {
             Anchor downloadLink = new Anchor();
             downloadLink.getElement().setAttribute("download", true);
             downloadLink.setHref("/api/sales/invoice/" + sale.getId());
@@ -135,7 +135,7 @@ public class SalesView extends Div {
 
         IntegerField quantityField = new IntegerField("Quantity");
         quantityField.setMin(1);
-        quantityField.setHasControls(true);
+        quantityField.setStepButtonsVisible(true);
         quantityField.setWidthFull();
 
         TextField totalField = new TextField("Total Amount");

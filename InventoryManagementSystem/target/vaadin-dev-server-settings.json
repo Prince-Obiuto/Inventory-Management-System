@@ -1,0 +1,17 @@
+{
+  "frontendFolder": "C:/Users/Owner/IdeaProjects/Inventory-Management-System/InventoryManagementSystem/frontend",
+  "themeFolder": "themes",
+  "themeResourceFolder": "C:/Users/Owner/IdeaProjects/Inventory-Management-System/InventoryManagementSystem/frontend/generated/jar-resources",
+  "staticOutput": "target/classes/META-INF/VAADIN/webapp/VAADIN/static",
+  "generatedFolder": "generated",
+  "statsOutput": "target/classes/META-INF/VAADIN/webapp/../config/",
+  "frontendBundleOutput": "target/classes/META-INF/VAADIN/webapp/",
+  "devBundleOutput": "C:/Users/Owner/IdeaProjects/Inventory-Management-System/InventoryManagementSystem/target/dev-bundle/webapp",
+  "devBundleStatsOutput": "C:/Users/Owner/IdeaProjects/Inventory-Management-System/InventoryManagementSystem/target/dev-bundle/config",
+  "jarResourcesFolder": "C:/Users/Owner/IdeaProjects/Inventory-Management-System/InventoryManagementSystem/frontend/generated/jar-resources",
+  "themeName": "",
+  "clientServiceWorkerSource": "C:\\Users\\Owner\\IdeaProjects\\Inventory-Management-System\\InventoryManagementSystem\\target\\sw.ts",
+  "pwaEnabled": false,
+  "offlineEnabled": false,
+  "offlinePath": "'offline.html'"
+}

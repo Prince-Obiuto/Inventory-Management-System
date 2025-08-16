@@ -37,4 +37,3 @@ public class Constants {
         // Utility class - prevent instantiation
     }
 }
-}

@@ -17,6 +17,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @PageTitle("Reports")
 @Route(value = "reports", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
@@ -47,15 +51,15 @@ public class ReportsView extends Div {
         cards.setWidthFull();
         cards.setJustifyContentMode(FlexComponent.JustifyContentMode.AROUND);
 
-        VerticalLayout todayCard = createStatsCards(
+        VerticalLayout todayCard = createStatsCard(
                 "Today's Performance",
                 "Revenue: ₦" + statsService.getDailySaleAmount(),
                 "Quantity Sold: " + (statsService.getDailyQuantitySold() != null ? statsService.getDailyQuantitySold() : 0),
                 VaadinIcon.CALENDAR.create(),
-                "var(--lumo-success-colour)"
+                "var(--lumo-success-color)"
         );
 
-        VerticalLayout weekCard = createStatsCards(
+        VerticalLayout weekCard = createStatsCard(
                 "Weekly Performance",
                 "Revenue: ₦" + statsService.getWeeklySaleAmount(),
                 "Period: " + getWeekRange(),
@@ -63,7 +67,7 @@ public class ReportsView extends Div {
                 "var(--lumo-primary-color)"
         );
 
-        VerticalLayout monthCard = createStatsCards(
+        VerticalLayout monthCard = createStatsCard(
                 "Monthly Performance",
                 "Revenue: ₦" + statsService.getMonthlySaleAmount(),
                 "Month: " + LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM yyyy")),
@@ -181,9 +185,9 @@ public class ReportsView extends Div {
                         "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>"
         );
 
-        Double daily = statsService.getDailySaleAmount();
-        Double weekly = statsService.getWeeklySaleAmount();
-        Double monthly = statsService.getMonthlySaleAmount();
+        BigDecimal daily = statsService.getDailySaleAmount();
+        BigDecimal weekly = statsService.getWeeklySaleAmount();
+        BigDecimal monthly = statsService.getMonthlySaleAmount();
 
         container.getElement().executeJs(
                 """
@@ -222,9 +226,9 @@ public class ReportsView extends Div {
                         "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>"
         );
 
-        Double dailyRevenue = statsService.getDailySaleAmount();
-        Double weeklyRevenue = statsService.getWeeklySaleAmount();
-        Double monthlyRevenue = statsService.getMonthlySaleAmount();
+        BigDecimal dailyRevenue = statsService.getDailySaleAmount();
+        BigDecimal weeklyRevenue = statsService.getWeeklySaleAmount();
+        BigDecimal monthlyRevenue = statsService.getMonthlySaleAmount();
         Long dailyQty = statsService.getDailyQuantitySold();
         long scaledDailyQty = dailyQty != null ? dailyQty * 100 : 0;
 
@@ -261,7 +265,7 @@ public class ReportsView extends Div {
         return container;
     }
 
-    private String getWeekPeriod() {
+    private String getWeekRange() {
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = today.minusDays(today.getDayOfWeek().getValue() - 1);
         LocalDate endOfWeek = startOfWeek.plusDays(6);
