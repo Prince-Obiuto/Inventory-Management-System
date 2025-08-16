@@ -39,17 +39,14 @@ public class SecurityConfig extends VaadinWebSecurity {
         return authConfig.getAuthenticationManager();
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(auth -> auth
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/stats/**").hasRole("ADMIN")
                 .requestMatchers("/api/**").hasAnyRole("ADMIN", "STAFF")
-            );
+        );
 
+        super.configure(http);
         setLoginView(http, LoginView.class);
-        super.filterChain(http);
-
-        return http.build();
     }
 }
