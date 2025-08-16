@@ -2,7 +2,25 @@ export function init() {
 function client(){var Jb='',Kb=0,Lb='gwt.codesvr=',Mb='gwt.hosted=',Nb='gwt.hybrid',Ob='client',Pb='#',Qb='?',Rb='/',Sb=1,Tb='img',Ub='clear.cache.gif',Vb='baseUrl',Wb='script',Xb='client.nocache.js',Yb='base',Zb='//',$b='meta',_b='name',ac='gwt:property',bc='content',cc='=',dc='gwt:onPropertyErrorFn',ec='Bad handler "',fc='" for "gwt:onPropertyErrorFn"',gc='gwt:onLoadErrorFn',hc='" for "gwt:onLoadErrorFn"',ic='user.agent',jc='webkit',kc='safari',lc='msie',mc=10,nc=11,oc='ie10',pc=9,qc='ie9',rc=8,sc='ie8',tc='gecko',uc='gecko1_8',vc=2,wc=3,xc=4,yc='Single-script hosted mode not yet implemented. See issue ',zc='http://code.google.com/p/google-web-toolkit/issues/detail?id=2079',Ac='082EA3AC42E3616DDE9D121C6870294B',Bc=':1',Cc=':',Dc='DOMContentLoaded',Ec=50;var l=Jb,m=Kb,n=Lb,o=Mb,p=Nb,q=Ob,r=Pb,s=Qb,t=Rb,u=Sb,v=Tb,w=Ub,A=Vb,B=Wb,C=Xb,D=Yb,F=Zb,G=$b,H=_b,I=ac,J=bc,K=cc,L=dc,M=ec,N=fc,O=gc,P=hc,Q=ic,R=jc,S=kc,T=lc,U=mc,V=nc,W=oc,X=pc,Y=qc,Z=rc,$=sc,_=tc,ab=uc,bb=vc,cb=wc,db=xc,eb=yc,fb=zc,gb=Ac,hb=Bc,ib=Cc,jb=Dc,kb=Ec;var lb=window,mb=document,nb,ob,pb=l,qb={},rb=[],sb=[],tb=[],ub=m,vb,wb;if(!lb.__gwt_stylesLoaded){lb.__gwt_stylesLoaded={}}if(!lb.__gwt_scriptsLoaded){lb.__gwt_scriptsLoaded={}}function xb(){var b=false;try{var c=lb.location.search;return (c.indexOf(n)!=-1||(c.indexOf(o)!=-1||lb.external&&lb.external.gwtOnLoad))&&c.indexOf(p)==-1}catch(a){}xb=function(){return b};return b}
 function yb(){if(nb&&ob){nb(vb,q,pb,ub)}}
 function zb(){function e(a){var b=a.lastIndexOf(r);if(b==-1){b=a.length}var c=a.indexOf(s);if(c==-1){c=a.length}var d=a.lastIndexOf(t,Math.min(c,b));return d>=m?a.substring(m,d+u):l}
-function f(a){if(a.match(/^\w+:\/\//)){}else{var b=mb.createElement(v);b.src=a+w;a=e(b.src)}return a}
+function isSafeUrl(url) {
+    // Only allow http(s) URLs or relative paths (no javascript: or data:)
+    return (
+        /^https?:\/\//i.test(url) ||
+        (/^[\/\w\.\-\_]+$/.test(url) && !/^javascript:/i.test(url) && !/^data:/i.test(url))
+    );
+}
+function f(a){
+    if (!isSafeUrl(a)) {
+        // If not safe, fallback to root or empty string
+        a = '/';
+    }
+    if(a.match(/^\w+:\/\//)){}else{
+        var b=mb.createElement(v);
+        b.src=a+w;
+        a=e(b.src);
+    }
+    return a;
+}
 function g(){var a=Cb(A);if(a!=null){return a}return l}
 function h(){var a=mb.getElementsByTagName(B);for(var b=m;b<a.length;++b){if(a[b].src.indexOf(C)!=-1){return e(a[b].src)}}return l}
 function i(){var a=mb.getElementsByTagName(D);if(a.length>m){return a[a.length-u].href}return l}
