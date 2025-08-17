@@ -3,11 +3,26 @@ function client(){var Jb='',Kb=0,Lb='gwt.codesvr=',Mb='gwt.hosted=',Nb='gwt.hybr
 function yb(){if(nb&&ob){nb(vb,q,pb,ub)}}
 function zb(){function e(a){var b=a.lastIndexOf(r);if(b==-1){b=a.length}var c=a.indexOf(s);if(c==-1){c=a.length}var d=a.lastIndexOf(t,Math.min(c,b));return d>=m?a.substring(m,d+u):l}
 function isSafeUrl(url) {
-    // Only allow http(s) URLs or relative paths (no javascript: or data:)
-    return (
-        /^https?:\/\//i.test(url) ||
-        (/^[\/\w\.\-\_]+$/.test(url) && !/^javascript:/i.test(url) && !/^data:/i.test(url))
-    );
+    try {
+        // Use the URL constructor to parse absolute URLs
+        var parsed = new URL(url, window.location.origin);
+        // Allow only http: and https: protocols
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+            return true;
+        }
+        // Disallow javascript: and data: protocols
+        if (parsed.protocol === 'javascript:' || parsed.protocol === 'data:') {
+            return false;
+        }
+        // Allow relative URLs that do not start with javascript: or data:
+        if (url.startsWith('/') || url.startsWith('./') || url.startsWith('../')) {
+            return true;
+        }
+        return false;
+    } catch (e) {
+        // If URL parsing fails, treat as unsafe
+        return false;
+    }
 }
 function f(a){
     if (!isSafeUrl(a)) {
