@@ -1,8 +1,0 @@
-com\senolight\InventoryManagementSystem\InventoryManagementSystemApplicationTests.class
-com\senolight\InventoryManagementSystem\service\ProductServiceTest.class
-com\senolight\InventoryManagementSystem\controller\ProductControllerTest.class
-com\senolight\InventoryManagementSystem\controller\SalesControllerTest.class
-com\senolight\InventoryManagementSystem\service\StatsServiceTest.class
-com\senolight\InventoryManagementSystem\integration\InventoryManagementIntegrationTest.class
-com\senolight\InventoryManagementSystem\service\SalesServiceTest.class
-com\senolight\InventoryManagementSystem\security\TestSecurityConfig.class
