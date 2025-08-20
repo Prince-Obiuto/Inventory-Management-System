@@ -240,4 +240,4 @@ For support and questions:
 
 ---
 
-**Built with ❤️ for Seno Light by your development team**
+**Built by Prince Obiuto**
