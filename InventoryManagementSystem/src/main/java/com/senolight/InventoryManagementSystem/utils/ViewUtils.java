@@ -15,7 +15,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class ViewUtils {
-    private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(Locale.of("en", "NG"));
+    private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new Locale("en", "NG"));
 
     public static String formatCurrency(double amount) {
         return "₦" + String.format("%,.2f", amount);
