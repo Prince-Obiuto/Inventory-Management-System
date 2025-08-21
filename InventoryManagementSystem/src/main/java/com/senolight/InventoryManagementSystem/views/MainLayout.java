@@ -14,10 +14,13 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @PageTitle("Inventory Management")
+@PermitAll
 public class MainLayout extends AppLayout {
 
     private H1 viewTitle;
@@ -33,7 +36,7 @@ public class MainLayout extends AppLayout {
         toggle.setAriaLabel("Menu toggle");
 
         viewTitle = new H1();
-        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
+        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.CENTER); // Changed from NONE
 
         Button logoutButton = new Button("Logout", new Icon(VaadinIcon.SIGN_OUT));
         logoutButton.addClickListener(e -> {
@@ -63,14 +66,26 @@ public class MainLayout extends AppLayout {
         addToDrawer(header, scroller);
     }
 
+    private boolean hasRole(String role) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) return false;
+        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
+            if (grantedAuthority.getAuthority().equals("ROLE_" + role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private SideNav createNavigation() {
         SideNav sideNav = new SideNav();
 
-        sideNav.addItem(new SideNavItem("Dasboard", DashBoardView.class, VaadinIcon.DASHBOARD.create()));
+        sideNav.addItem(new SideNavItem("Dashboard", DashBoardView.class, VaadinIcon.DASHBOARD.create()));
         sideNav.addItem(new SideNavItem("Products", ProductView.class, VaadinIcon.PACKAGE.create()));
         sideNav.addItem(new SideNavItem("Sales", SalesView.class, VaadinIcon.CART.create()));
-        sideNav.addItem(new SideNavItem("Reports", ReportsView.class, VaadinIcon.CHART.create()));
-
+        if (hasRole("ADMIN")) {
+            sideNav.addItem(new SideNavItem("Reports", ReportsView.class, VaadinIcon.CHART.create()));
+        }
         return sideNav;
     }
 
