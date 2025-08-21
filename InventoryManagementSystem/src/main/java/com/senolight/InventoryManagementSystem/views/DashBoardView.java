@@ -25,6 +25,7 @@ import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @PageTitle("Dashboard")
 @Route(value = "dashboard", layout = MainLayout.class)
@@ -43,10 +44,18 @@ public class DashBoardView extends Main {
         setHeightFull();
 
         Board board = new Board();
-        board.addRow(createHighlight("Today's Revenue", "₦" + statsService.getDailyQuantitySold(), VaadinIcon.MONEY.create()),
-                createHighlight("Weekly Revenue", "₦" + statsService.getWeeklySaleAmount(),VaadinIcon.TRENDING_UP.create()),
-                createHighlight("Monthly Revenue", "₦" + statsService.getMonthlySaleAmount(),VaadinIcon.CHART.create()),
-                createHighlight("Products in Stock", String.valueOf(productService.getAllProducts().size()), VaadinIcon.PACKAGE.create()));
+
+        // Null checks
+        BigDecimal dailyRevenue = statsService.getDailySaleAmount();
+        BigDecimal weeklyRevenue = statsService.getWeeklySaleAmount();
+        BigDecimal monthlyRevenue = statsService.getMonthlySaleAmount();
+        Long dailyQty = statsService.getDailyQuantitySold();
+        List<Product> products = productService.getAllProducts();
+
+        board.addRow(createHighlight("Today's Revenue", "₦" + (dailyRevenue != null ? dailyRevenue : BigDecimal.ZERO), VaadinIcon.MONEY.create()),
+                createHighlight("Weekly Revenue", "₦" + (weeklyRevenue != null ? weeklyRevenue : BigDecimal.ZERO),VaadinIcon.TRENDING_UP.create()),
+                createHighlight("Monthly Revenue", "₦" + (monthlyRevenue != null ? monthlyRevenue : BigDecimal.ZERO),VaadinIcon.CHART.create()),
+                createHighlight("Products in Stock", String.valueOf(products != null ? products.size() : 0), VaadinIcon.PACKAGE.create()));
 
         board.addRow(createRevenueChart());
         add(board);
