@@ -18,12 +18,19 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collections;
+import java.util.List;
 
 @PageTitle("Products")
 @Route(value = "products", layout = MainLayout.class)
 @PermitAll
 public class ProductView extends Div {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductView.class);
 
     private Grid<Product> grid = new Grid<>(Product.class, false);
     private TextField filterText = new TextField();
@@ -143,6 +150,19 @@ public class ProductView extends Div {
     }
 
     private void updateList() {
-        grid.setItems(productService.getAllProducts());
+        try {
+            List<Product> products = productService.getAllProducts();
+            if (products != null) {
+                grid.setItems(products);
+            } else {
+                logger.warn("Product service returned null, using empty list");
+                grid.setItems(Collections.emptyList());
+            }
+        } catch (Exception e) {
+            logger.error("Error fetching products, using empty list", e);
+            grid.setItems(Collections.emptyList());
+            Notification.show("Error loading products. Please try again.")
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
     }
 }

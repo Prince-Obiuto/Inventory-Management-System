@@ -16,6 +16,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -27,6 +29,8 @@ import java.time.format.DateTimeFormatter;
 @RolesAllowed("ADMIN")
 public class ReportsView extends Div {
 
+    private static final Logger logger = LoggerFactory.getLogger(ReportsView.class);
+
     private final StatsService statsService;
 
     public ReportsView(@Autowired StatsService statsService) {
@@ -35,9 +39,38 @@ public class ReportsView extends Div {
         addClassName("reports-view");
         setSizeFull();
 
-        add(createHeader());
-        add(createStatsCards());
-        add(createCharts());
+        try {
+            add(createHeader());
+            add(createStatsCards());
+            add(createCharts());
+        } catch (Exception e) {
+            logger.error("Error initializing reports view", e);
+            // Show a fallback UI
+            Div errorDiv = new Div();
+            errorDiv.setText("Reports are temporarily unavailable. Please try again later.");
+            errorDiv.addClassName("error-message");
+            add(errorDiv);
+        }
+    }
+
+    private BigDecimal safeGetBigDecimal(java.util.function.Supplier<BigDecimal> supplier) {
+        try {
+            BigDecimal result = supplier.get();
+            return result != null ? result : BigDecimal.ZERO;
+        } catch (Exception e) {
+            logger.warn("Error fetching BigDecimal value, returning zero", e);
+            return BigDecimal.ZERO;
+        }
+    }
+
+    private Long safeGetLong(java.util.function.Supplier<Long> supplier) {
+        try {
+            Long result = supplier.get();
+            return result != null ? result : 0L;
+        } catch (Exception e) {
+            logger.warn("Error fetching Long value, returning zero", e);
+            return 0L;
+        }
     }
 
     private Component createHeader() {
@@ -47,37 +80,50 @@ public class ReportsView extends Div {
     }
 
     private Component createStatsCards() {
-        HorizontalLayout cards = new HorizontalLayout();
-        cards.addClassName("stats-cards");
-        cards.setWidthFull();
-        cards.setJustifyContentMode(FlexComponent.JustifyContentMode.AROUND);
+        try {
+            HorizontalLayout cards = new HorizontalLayout();
+            cards.addClassName("stats-cards");
+            cards.setWidthFull();
+            cards.setJustifyContentMode(FlexComponent.JustifyContentMode.AROUND);
 
-        VerticalLayout todayCard = createStatsCard(
-                "Today's Performance",
-                "Revenue: ₦" + statsService.getDailySaleAmount(),
-                "Quantity Sold: " + (statsService.getDailyQuantitySold() != null ? statsService.getDailyQuantitySold() : 0),
-                VaadinIcon.CALENDAR.create(),
-                "var(--lumo-success-color)"
-        );
+            // Safely fetch all values with defaults
+            BigDecimal dailyRevenue = safeGetBigDecimal(() -> statsService.getDailySaleAmount());
+            Long dailyQuantity = safeGetLong(() -> statsService.getDailyQuantitySold());
+            BigDecimal weeklyRevenue = safeGetBigDecimal(() -> statsService.getWeeklySaleAmount());
+            BigDecimal monthlyRevenue = safeGetBigDecimal(() -> statsService.getMonthlySaleAmount());
 
-        VerticalLayout weekCard = createStatsCard(
-                "Weekly Performance",
-                "Revenue: ₦" + statsService.getWeeklySaleAmount(),
-                "Period: " + getWeekRange(),
-                VaadinIcon.TRENDING_UP.create(),
-                "var(--lumo-primary-color)"
-        );
+            VerticalLayout todayCard = createStatsCard(
+                    "Today's Performance",
+                    "Revenue: ₦" + String.valueOf(dailyRevenue),
+                    "Quantity Sold: " + String.valueOf(dailyQuantity),
+                    VaadinIcon.CALENDAR.create(),
+                    "var(--lumo-success-color)"
+            );
 
-        VerticalLayout monthCard = createStatsCard(
-                "Monthly Performance",
-                "Revenue: ₦" + statsService.getMonthlySaleAmount(),
-                "Month: " + LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM yyyy")),
-                VaadinIcon.CHART.create(),
-                "var(--lumo-contrast-color)"
-        );
+            VerticalLayout weekCard = createStatsCard(
+                    "Weekly Performance",
+                    "Revenue: ₦" + String.valueOf(weeklyRevenue),
+                    "Period: " + getWeekRange(),
+                    VaadinIcon.TRENDING_UP.create(),
+                    "var(--lumo-primary-color)"
+            );
 
-        cards.add(todayCard, weekCard, monthCard);
-        return cards;
+            VerticalLayout monthCard = createStatsCard(
+                    "Monthly Performance",
+                    "Revenue: ₦" + String.valueOf(monthlyRevenue),
+                    "Month: " + LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM yyyy")),
+                    VaadinIcon.CHART.create(),
+                    "var(--lumo-contrast-color)"
+            );
+
+            cards.add(todayCard, weekCard, monthCard);
+            return cards;
+        } catch (Exception e) {
+            logger.error("Error creating stats cards", e);
+            Div fallback = new Div();
+            fallback.setText("Stats cards temporarily unavailable");
+            return fallback;
+        }
     }
 
     private VerticalLayout createStatsCard(String title, String primaryStat, String secondaryStat, Icon icon, String iconColor) {
@@ -179,99 +225,132 @@ public class ReportsView extends Div {
 //    }
 
     private Component createRevenueChart() {
-        Div container = new Div();
-        container.setWidth("50%");
-        container.getElement().setProperty("innerHTML",
-                "<canvas id='revenueChart'></canvas>" +
-                        "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>"
-        );
+        try {
+            Div container = new Div();
+            container.setWidth("50%");
+            container.getElement().setProperty("innerHTML",
+                    "<canvas id='revenueChart'></canvas>" +
+                            "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>"
+            );
 
-        BigDecimal daily = statsService.getDailySaleAmount();
-        BigDecimal weekly = statsService.getWeeklySaleAmount();
-        BigDecimal monthly = statsService.getMonthlySaleAmount();
+            // Safely fetch values with defaults
+            BigDecimal daily = safeGetBigDecimal(() -> statsService.getDailySaleAmount());
+            BigDecimal weekly = safeGetBigDecimal(() -> statsService.getWeeklySaleAmount());
+            BigDecimal monthly = safeGetBigDecimal(() -> statsService.getMonthlySaleAmount());
 
-        container.getElement().executeJs(
-                """
-                const ctx = document.getElementById('revenueChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Today', 'This Week', 'This Month'],
-                        datasets: [{
-                            label: 'Revenue (₦)',
-                            data: [$0, $1, $2],
-                            backgroundColor: 'rgba(54, 162, 235, 0.3)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { title: { display: true, text: 'Revenue Trend' } },
-                        scales: { y: { title: { display: true, text: 'Revenue (₦)' } } }
-                    }
-                });
-                """,
-                daily, weekly, monthly
-        );
+            // Convert to safe double values for JS
+            double dailyValue = daily.doubleValue();
+            double weeklyValue = weekly.doubleValue();
+            double monthlyValue = monthly.doubleValue();
 
-        return container;
+            container.getElement().executeJs(
+                    """
+                    const ctx = document.getElementById('revenueChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Today', 'This Week', 'This Month'],
+                            datasets: [{
+                                label: 'Revenue (₦)',
+                                data: [$0, $1, $2],
+                                backgroundColor: 'rgba(54, 162, 235, 0.3)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { title: { display: true, text: 'Revenue Trend' } },
+                            scales: { y: { title: { display: true, text: 'Revenue (₦)' } } }
+                        }
+                    });
+                    """,
+                    dailyValue, weeklyValue, monthlyValue
+            );
+
+            return container;
+        } catch (Exception e) {
+            logger.error("Error creating revenue chart", e);
+            Div fallback = new Div();
+            fallback.setText("Revenue chart temporarily unavailable");
+            fallback.setWidth("50%");
+            return fallback;
+        }
     }
 
     private Component createSalesComparisonChart() {
-        Div container = new Div();
-        container.setWidth("50%");
-        container.getElement().setProperty("innerHTML",
-                "<canvas id='salesComparisonChart'></canvas>" +
-                        "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>"
-        );
+        try {
+            Div container = new Div();
+            container.setWidth("50%");
+            container.getElement().setProperty("innerHTML",
+                    "<canvas id='salesComparisonChart'></canvas>" +
+                            "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>"
+            );
 
-        BigDecimal dailyRevenue = statsService.getDailySaleAmount();
-        BigDecimal weeklyRevenue = statsService.getWeeklySaleAmount();
-        BigDecimal monthlyRevenue = statsService.getMonthlySaleAmount();
-        Long dailyQty = statsService.getDailyQuantitySold();
-        long scaledDailyQty = dailyQty != null ? dailyQty * 100 : 0;
+            // Safely fetch values with defaults
+            BigDecimal dailyRevenue = safeGetBigDecimal(() -> statsService.getDailySaleAmount());
+            BigDecimal weeklyRevenue = safeGetBigDecimal(() -> statsService.getWeeklySaleAmount());
+            BigDecimal monthlyRevenue = safeGetBigDecimal(() -> statsService.getMonthlySaleAmount());
+            Long dailyQty = safeGetLong(() -> statsService.getDailyQuantitySold());
 
-        container.getElement().executeJs(
-                """
-                const ctx = document.getElementById('salesComparisonChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Daily', 'Weekly', 'Monthly'],
-                        datasets: [
-                            {
-                                label: 'Revenue (₦)',
-                                data: [$0, $1, $2],
-                                backgroundColor: 'rgba(75, 192, 192, 0.7)'
-                            },
-                            {
-                                label: 'Quantity Sold (x100)',
-                                data: [$3, 0, 0],
-                                backgroundColor: 'rgba(255, 159, 64, 0.7)'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { title: { display: true, text: 'Sales Performance Comparison' } },
-                        scales: { y: { title: { display: true, text: 'Amount' } } }
-                    }
-                });
-                """,
-                dailyRevenue, weeklyRevenue, monthlyRevenue, scaledDailyQty
-        );
+            // Convert to safe values for JS
+            double dailyRevenueValue = dailyRevenue.doubleValue();
+            double weeklyRevenueValue = weeklyRevenue.doubleValue();
+            double monthlyRevenueValue = monthlyRevenue.doubleValue();
+            long scaledDailyQty = dailyQty * 100; // scale for visibility
 
-        return container;
+            container.getElement().executeJs(
+                    """
+                    const ctx = document.getElementById('salesComparisonChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Daily', 'Weekly', 'Monthly'],
+                            datasets: [
+                                {
+                                    label: 'Revenue (₦)',
+                                    data: [$0, $1, $2],
+                                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                                },
+                                {
+                                    label: 'Quantity Sold (x100)',
+                                    data: [$3, 0, 0],
+                                    backgroundColor: 'rgba(255, 159, 64, 0.7)'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { title: { display: true, text: 'Sales Performance Comparison' } },
+                            scales: { y: { title: { display: true, text: 'Amount' } } }
+                        }
+                    });
+                    """,
+                    dailyRevenueValue, weeklyRevenueValue, monthlyRevenueValue, scaledDailyQty
+            );
+
+            return container;
+        } catch (Exception e) {
+            logger.error("Error creating sales comparison chart", e);
+            Div fallback = new Div();
+            fallback.setText("Sales comparison chart temporarily unavailable");
+            fallback.setWidth("50%");
+            return fallback;
+        }
     }
 
     private String getWeekRange() {
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.minusDays(today.getDayOfWeek().getValue() - 1);
-        LocalDate endOfWeek = startOfWeek.plusDays(6);
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDate startOfWeek = today.minusDays(today.getDayOfWeek().getValue() - 1);
+            LocalDate endOfWeek = startOfWeek.plusDays(6);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd");
-        return startOfWeek.format(formatter) + " - " + endOfWeek.format(formatter);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd");
+            return startOfWeek.format(formatter) + " - " + endOfWeek.format(formatter);
+        } catch (Exception e) {
+            logger.warn("Error calculating week range, using fallback", e);
+            return "This Week";
+        }
     }
 }
