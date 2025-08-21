@@ -4,10 +4,12 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.router.*;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.servlet.http.HttpServletResponse;
 
 @PageTitle("Error")
 @ParentLayout(MainLayout.class)
+@AnonymousAllowed
 public class ErrorView extends Div implements HasErrorParameter<Exception> {
 
     public ErrorView() {

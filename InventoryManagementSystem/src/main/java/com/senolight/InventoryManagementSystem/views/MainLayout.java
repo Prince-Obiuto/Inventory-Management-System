@@ -36,7 +36,7 @@ public class MainLayout extends AppLayout {
         toggle.setAriaLabel("Menu toggle");
 
         viewTitle = new H1();
-        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.CENTER); // Changed from NONE
+        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
 
         Button logoutButton = new Button("Logout", new Icon(VaadinIcon.SIGN_OUT));
         logoutButton.addClickListener(e -> {
