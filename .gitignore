@@ -1,1 +1,17 @@
 application.properties
+
+# Maven build directories
+InventoryManagementSystem/target/
+InventoryManagementSystem/frontend/generated/
+
+# Node modules
+InventoryManagementSystem/node_modules/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db

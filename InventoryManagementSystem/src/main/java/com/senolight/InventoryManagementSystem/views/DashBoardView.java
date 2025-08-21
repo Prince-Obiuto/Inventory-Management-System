@@ -22,9 +22,12 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 @PageTitle("Dashboard")
@@ -32,6 +35,8 @@ import java.util.List;
 //@RouteAlias(value = "", layout = MainLayout.class)
 @PermitAll
 public class DashBoardView extends Main {
+
+    private static final Logger logger = LoggerFactory.getLogger(DashBoardView.class);
 
     private final StatsService statsService;
     private final ProductService productService;
@@ -43,22 +48,51 @@ public class DashBoardView extends Main {
         addClassName("dashboard-view");
         setHeightFull();
 
-        Board board = new Board();
+        try {
+            // Safely fetch all values with defaults before building UI
+            BigDecimal dailyRevenue = safeGetBigDecimal(() -> statsService.getDailySaleAmount());
+            BigDecimal weeklyRevenue = safeGetBigDecimal(() -> statsService.getWeeklySaleAmount());
+            BigDecimal monthlyRevenue = safeGetBigDecimal(() -> statsService.getMonthlySaleAmount());
+            int productCount = safeGetProductCount();
 
-        // Null checks
-        BigDecimal dailyRevenue = statsService.getDailySaleAmount();
-        BigDecimal weeklyRevenue = statsService.getWeeklySaleAmount();
-        BigDecimal monthlyRevenue = statsService.getMonthlySaleAmount();
-        Long dailyQty = statsService.getDailyQuantitySold();
-        List<Product> products = productService.getAllProducts();
+            Board board = new Board();
+            board.addRow(
+                createHighlight("Today's Revenue", "₦" + dailyRevenue, VaadinIcon.MONEY.create()),
+                createHighlight("Weekly Revenue", "₦" + weeklyRevenue, VaadinIcon.TRENDING_UP.create()),
+                createHighlight("Monthly Revenue", "₦" + monthlyRevenue, VaadinIcon.CHART.create()),
+                createHighlight("Products in Stock", String.valueOf(productCount), VaadinIcon.PACKAGE.create())
+            );
 
-        board.addRow(createHighlight("Today's Revenue", "₦" + (dailyRevenue != null ? dailyRevenue : BigDecimal.ZERO), VaadinIcon.MONEY.create()),
-                createHighlight("Weekly Revenue", "₦" + (weeklyRevenue != null ? weeklyRevenue : BigDecimal.ZERO),VaadinIcon.TRENDING_UP.create()),
-                createHighlight("Monthly Revenue", "₦" + (monthlyRevenue != null ? monthlyRevenue : BigDecimal.ZERO),VaadinIcon.CHART.create()),
-                createHighlight("Products in Stock", String.valueOf(products != null ? products.size() : 0), VaadinIcon.PACKAGE.create()));
+            board.addRow(createRevenueChart());
+            add(board);
+        } catch (Exception e) {
+            logger.error("Error initializing dashboard view", e);
+            // Show a fallback UI
+            Div errorDiv = new Div();
+            errorDiv.setText("Dashboard is temporarily unavailable. Please try again later.");
+            errorDiv.addClassName("error-message");
+            add(errorDiv);
+        }
+    }
 
-        board.addRow(createRevenueChart());
-        add(board);
+    private BigDecimal safeGetBigDecimal(java.util.function.Supplier<BigDecimal> supplier) {
+        try {
+            BigDecimal result = supplier.get();
+            return result != null ? result : BigDecimal.ZERO;
+        } catch (Exception e) {
+            logger.warn("Error fetching BigDecimal value, returning zero", e);
+            return BigDecimal.ZERO;
+        }
+    }
+
+    private int safeGetProductCount() {
+        try {
+            List<?> products = productService.getAllProducts();
+            return products != null ? products.size() : 0;
+        } catch (Exception e) {
+            logger.warn("Error fetching product count, returning zero", e);
+            return 0;
+        }
     }
 
     private Component createHighlight(String title, String value, Icon icon) {
@@ -83,73 +117,67 @@ public class DashBoardView extends Main {
     }
 
     private Component createRevenueChart() {
+        try {
+            // Using a Div to hold the Chart.js canvas
+            Div container = new Div();
+            container.getElement().setProperty("innerHTML", "<canvas id='revenueChart'></canvas>");
+            container.setWidthFull();
 
-//        Chart chart = new Chart(ChartType.COLUMN);
-//
-//        Configuration configuration = chart.getConfiguration();
-//        configuration.getTitle().setText("Sales Overview");
-//
-//        XAxis xAxis = configuration.getxAxis();
-//        xAxis.setCategories("Today", "This Week", "This Month");
-//
-//        YAxis yAxis = configuration.getyAxis();
-//        yAxis.getTitle().setText("Revenue (₦)");
-//
-//        DataSeries series = new DataSeries("Revenue");
-//        series.add(new DataSeriesItem("Today", statsService.getDailySaleAmount()));
-//        series.add(new DataSeriesItem("This Week", statsService.getWeeklySaleAmount()));
-//        series.add(new DataSeriesItem("This Month", statsService.getMonthlySaleAmount()));
-//
-//        configuration.addSeries(series);
-//        return chart;
+            // Get sanitized values from the service with safe defaults
+            BigDecimal todayRevenue = safeGetBigDecimal(() -> statsService.getDailySaleAmount());
+            BigDecimal weekRevenue = safeGetBigDecimal(() -> statsService.getWeeklySaleAmount());
+            BigDecimal monthRevenue = safeGetBigDecimal(() -> statsService.getMonthlySaleAmount());
 
-        // Using a Div to hold the Chart.js canvas
-        Div container = new Div();
-        container.getElement().setProperty("innerHTML", "<canvas id='revenueChart'></canvas>");
-        container.setWidthFull();
+            // Convert to doubles for JS, ensuring they're never null
+            double todayValue = todayRevenue.doubleValue();
+            double weekValue = weekRevenue.doubleValue();
+            double monthValue = monthRevenue.doubleValue();
 
-        // Get your values from the service
-        BigDecimal todayRevenue = statsService.getDailySaleAmount();
-        BigDecimal weekRevenue = statsService.getWeeklySaleAmount();
-        BigDecimal monthRevenue = statsService.getMonthlySaleAmount();
-
-        // Inject Chart.js script
-        container.getElement().executeJs("""
-                    if (typeof Chart === 'undefined') {
-                        var script = document.createElement('script');
-                        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-                        script.onload = function() {
+            // Inject Chart.js script with sanitized numeric values
+            container.getElement().executeJs("""
+                        if (typeof Chart === 'undefined') {
+                            var script = document.createElement('script');
+                            script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                            script.onload = function() {
+                                renderChart();
+                            };
+                            document.head.appendChild(script);
+                        } else {
                             renderChart();
-                        };
-                        document.head.appendChild(script);
-                    } else {
-                        renderChart();
-                    }
-                
-                    function renderChart() {
-                        const ctx = document.getElementById('revenueChart').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Today', 'This Week', 'This Month'],
-                                datasets: [{
-                                    label: 'Revenue (₦)',
-                                    data: [%s, %s, %s],
-                                    backgroundColor: ['#4CAF50', '#2196F3', '#FFC107']
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true
+                        }
+                    
+                        function renderChart() {
+                            const ctx = document.getElementById('revenueChart').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: ['Today', 'This Week', 'This Month'],
+                                    datasets: [{
+                                        label: 'Revenue (₦)',
+                                        data: [$0, $1, $2],
+                                        backgroundColor: ['#4CAF50', '#2196F3', '#FFC107']
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
                                     }
                                 }
-                            }
-                        });
-                    }
-                """, todayRevenue, weekRevenue, monthRevenue);
+                            });
+                        }
+                    """, todayValue, weekValue, monthValue);
 
-        return container;
+            return container;
+        } catch (Exception e) {
+            logger.error("Error creating revenue chart", e);
+            // Return a fallback component
+            Div fallback = new Div();
+            fallback.setText("Chart temporarily unavailable");
+            fallback.addClassName("chart-fallback");
+            return fallback;
+        }
     }
 }
