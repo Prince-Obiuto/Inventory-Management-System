@@ -1,15 +1,15 @@
 application.properties
 
 # Maven build directories
-InventoryManagementSystem/target/
-InventoryManagementSystem/frontend/generated/
+InventoryManagementSystem/target
+InventoryManagementSystem/frontend/generated
 
 # Node modules
-InventoryManagementSystem/node_modules/
+InventoryManagementSystem/node_modules
 
 # IDE files
-.idea/
-.vscode/
+.idea
+.vscode
 *.iml
 
 # OS files

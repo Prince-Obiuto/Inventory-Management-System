@@ -103,7 +103,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-board-flow</artifactId>
-            <version>24.8.6</version> <!-- Match your Vaadin version -->
+            <version>${vaadin.version}</version>
         </dependency>
     </dependencies>
 
@@ -148,7 +148,7 @@
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
-                <version>24.4.12</version>
+                <version>${vaadin.version}</version>
                 <executions>
                     <execution>
                         <goals>

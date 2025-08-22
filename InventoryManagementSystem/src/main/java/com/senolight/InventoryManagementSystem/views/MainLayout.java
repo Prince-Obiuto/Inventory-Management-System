@@ -81,7 +81,9 @@ public class MainLayout extends AppLayout {
         SideNav sideNav = new SideNav();
 
         sideNav.addItem(new SideNavItem("Dashboard", DashBoardView.class, VaadinIcon.DASHBOARD.create()));
-        sideNav.addItem(new SideNavItem("Products", ProductView.class, VaadinIcon.PACKAGE.create()));
+SideNavItem sidenavitem = new SideNavItem("Products", ProductView.class, VaadinIcon.PACKAGE.create());
+sidenavitem.setEnabled(true);
+sideNav.addItem(sidenavitem);
         sideNav.addItem(new SideNavItem("Sales", SalesView.class, VaadinIcon.CART.create()));
         if (hasRole("ADMIN")) {
             sideNav.addItem(new SideNavItem("Reports", ReportsView.class, VaadinIcon.CHART.create()));

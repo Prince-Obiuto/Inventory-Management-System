@@ -10,6 +10,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -20,7 +21,7 @@ import com.vaadin.flow.shared.Registration;
 public class ProductForm extends FormLayout {
     TextField name = new TextField("Product Name");
     TextField sku = new TextField("SKU");
-    NumberField quantity = new NumberField("Quantity");
+    IntegerField quantity = new IntegerField("Quantity");
     NumberField price = new NumberField("Price");
 
     Button save = new Button("Save");
@@ -32,14 +33,28 @@ public class ProductForm extends FormLayout {
     public ProductForm() {
         addClassName("product-form");
 
-        binder.bindInstanceFields(this);
-
         quantity.setMin(0);
         quantity.setStepButtonsVisible(true);
 
         price.setMin(0.01);
         price.setStep(0.01);
         price.setPrefixComponent(new Span("₦"));
+
+        binder.forField(name)
+                .asRequired("Name is required")
+                .bind(Product::getName, Product::setName);
+
+        binder.forField(sku)
+                .asRequired("SKU is required")
+                .bind(Product::getSku, Product::setSku);
+
+        binder.forField(quantity)
+                .withNullRepresentation(0)
+                .bind(Product::getQuantity, Product::setQuantity);
+
+        binder.forField(price)
+                .withNullRepresentation(0.0d)
+                .bind(Product::getPrice, Product::setPrice);
 
         add(name, sku, quantity, price, createButtonsLayout());
     }
@@ -62,6 +77,9 @@ public class ProductForm extends FormLayout {
 
     private void validateAndSave() {
         try {
+            if (binder.getBean() == null) {
+                binder.setBean(new Product());
+            }
             binder.writeBean(binder.getBean());
             fireEvent(new SaveEvent(this, binder.getBean()));
         } catch (ValidationException e) {
@@ -75,7 +93,7 @@ public class ProductForm extends FormLayout {
 
     //Events
     public static abstract class ProductFormEvent extends ComponentEvent<ProductForm> {
-        private Product product;
+        private final Product product;
 
         protected ProductFormEvent(ProductForm source, Product product) {
             super(source, false);
