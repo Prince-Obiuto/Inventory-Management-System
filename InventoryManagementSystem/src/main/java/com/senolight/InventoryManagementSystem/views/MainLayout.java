@@ -1,5 +1,6 @@
 package com.senolight.InventoryManagementSystem.views;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -13,11 +14,15 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @PageTitle("Inventory Management")
 @PermitAll
@@ -40,7 +45,10 @@ public class MainLayout extends AppLayout {
 
         Button logoutButton = new Button("Logout", new Icon(VaadinIcon.SIGN_OUT));
         logoutButton.addClickListener(e -> {
-            getUI().ifPresent(ui -> ui.getPage().setLocation("/logout"));
+            VaadinServletRequest vaadinServletRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
+            HttpServletRequest httpServletRequest = vaadinServletRequest.getHttpServletRequest();
+            new SecurityContextLogoutHandler().logout(httpServletRequest, null, null);
+            UI.getCurrent().getPage().setLocation("/login?logout");
         });
 
         Header header = new Header(toggle, viewTitle);

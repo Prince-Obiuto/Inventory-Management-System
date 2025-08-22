@@ -214,7 +214,7 @@ public class ReportsView extends Div {
 //        Long dailyQty = statsService.getDailyQuantitySold();
 //        quantitySeries.add(new DataSeriesItem("Daily",
 //                dailyQty != null ? dailyQty * 100 : 0));
-//        // Note: You might want to add weekly and monthly quantity methods to StatsService
+
 //        quantitySeries.add(new DataSeriesItem("Weekly", 0));
 //        quantitySeries.add(new DataSeriesItem("Monthly", 0));
 //
@@ -284,50 +284,91 @@ public class ReportsView extends Div {
             Div container = new Div();
             container.setWidth("50%");
             container.getElement().setProperty("innerHTML",
-                    "<canvas id='salesComparisonChart'></canvas>" +
-                            "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>"
-            );
+                    "<canvas id='salesComparisonChart'></canvas>");
 
             // Safely fetch values with defaults
             BigDecimal dailyRevenue = safeGetBigDecimal(() -> statsService.getDailySaleAmount());
             BigDecimal weeklyRevenue = safeGetBigDecimal(() -> statsService.getWeeklySaleAmount());
             BigDecimal monthlyRevenue = safeGetBigDecimal(() -> statsService.getMonthlySaleAmount());
-            Long dailyQty = safeGetLong(() -> statsService.getDailyQuantitySold());
+            Long dailyQty = statsService.getDailyQuantitySold();
+            Double dailyQuantity = dailyQty != null ? dailyQty.doubleValue() : 0.0;
 
             // Convert to safe values for JS
             double dailyRevenueValue = dailyRevenue.doubleValue();
             double weeklyRevenueValue = weeklyRevenue.doubleValue();
             double monthlyRevenueValue = monthlyRevenue.doubleValue();
-            long scaledDailyQty = dailyQty * 100; // scale for visibility
 
             container.getElement().executeJs(
                     """
                     const ctx = document.getElementById('salesComparisonChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['Daily', 'Weekly', 'Monthly'],
-                            datasets: [
-                                {
-                                    label: 'Revenue (₦)',
-                                    data: [$0, $1, $2],
-                                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
-                                },
-                                {
-                                    label: 'Quantity Sold (x100)',
-                                    data: [$3, 0, 0],
-                                    backgroundColor: 'rgba(255, 159, 64, 0.7)'
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: { title: { display: true, text: 'Sales Performance Comparison' } },
-                            scales: { y: { title: { display: true, text: 'Amount' } } }
-                        }
-                    });
+                            if (!ctx) return;
+                                             new Chart(ctx, {
+                                               type: 'bar',
+                                               data: {
+                                                 labels: ['Daily', 'Weekly', 'Monthly'],
+                                                 datasets: [
+                                                   {
+                                                     type: 'bar',
+                                                     label: 'Revenue (₦)',
+                                                     data: [$0, $1, $2],
+                                                     backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                                     borderColor: 'rgba(54, 162, 235, 1)',
+                                                     borderWidth: 1,
+                                                     yAxisID: 'y'
+                                                   },
+                                                   {
+                                                     type: 'line',
+                                                     label: 'Quantity Sold',
+                                                     data: [$3, 0, 0],
+                                                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                                     borderColor: 'rgba(255, 99, 132, 1)',
+                                                     borderWidth: 2,
+                                                     tension: 0.3,
+                                                     yAxisID: 'y1'
+                                                   }
+                                                 ]
+                                               },
+                                               options: {
+                                                 responsive: true,
+                                                 interaction: { mode: 'index', intersect: false },
+                                                 scales: {
+                                                   y: {
+                                                     beginAtZero: true,
+                                                     position: 'left',
+                                                     title: { display: true, text: 'Revenue (₦)' }
+                                                   },
+                                                   y1: {
+                                                     beginAtZero: true,
+                                                     position: 'right',
+                                                     grid: { drawOnChartArea: false },
+                                                     title: { display: true, text: 'Quantity' }
+                                                   }
+                                                 },
+                                                 plugins: {
+                                                   legend: { position: 'top' },
+                                                   tooltip: { enabled: true }
+                                                 }
+                                               }
+                                             });
+                                           };
+                            
+                                           if (typeof Chart === 'undefined') {
+                                             const existing = Array.from(document.getElementsByTagName('script'))
+                                               .some(s => s.src && s.src.includes('cdn.jsdelivr.net/npm/chart.js'));
+                                             if (!existing) {
+                                               const s = document.createElement('script');
+                                               s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                                               s.onload = render;
+                                               document.head.appendChild(s);
+                                             } else {
+                                               // Script tag exists but Chart not initialized yet; wait a tick
+                                               setTimeout(render, 100);
+                                             }
+                                           } else {
+                                             render();
+                                           }
                     """,
-                    dailyRevenueValue, weeklyRevenueValue, monthlyRevenueValue, scaledDailyQty
+                    dailyRevenueValue, weeklyRevenueValue, monthlyRevenueValue, dailyQuantity
             );
 
             return container;
@@ -335,7 +376,7 @@ public class ReportsView extends Div {
             logger.error("Error creating sales comparison chart", e);
             Div fallback = new Div();
             fallback.setText("Sales comparison chart temporarily unavailable");
-            fallback.setWidth("50%");
+            fallback.getStyle().set("color", "var(--lumo-error-text-color)");
             return fallback;
         }
     }

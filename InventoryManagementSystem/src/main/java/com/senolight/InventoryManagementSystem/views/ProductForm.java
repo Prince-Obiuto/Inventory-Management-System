@@ -36,7 +36,7 @@ public class ProductForm extends FormLayout {
         quantity.setMin(0);
         quantity.setStepButtonsVisible(true);
 
-        price.setMin(0.01);
+        price.setMin(0.0);
         price.setStep(0.01);
         price.setPrefixComponent(new Span("₦"));
 
@@ -71,7 +71,7 @@ public class ProductForm extends FormLayout {
         delete.addClickListener(event -> fireEvent(new DeleteEvent(this, binder.getBean())));
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
 
-        binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
+        binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid() && binder.getBean() != null));
         return new HorizontalLayout(save, delete, close);
     }
 
